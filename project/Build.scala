@@ -45,7 +45,7 @@ object Build extends Build {
 
   import Dependencies._
 
-  lazy val `scala-volpts` = project.in(file("."))
+  lazy val svolpts = project.in(file("."))
     .settings(
       javaOptions := Seq("-Xms1024m"),
       organization := "info.sumito3478",
