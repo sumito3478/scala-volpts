@@ -41,6 +41,21 @@ object Build extends Build {
       commitMessage <<= (version in ThisBuild) map (v => s"Bump version number to $v"))
   }
 
+  lazy val ratsSettings = {
+    import SBTRatsPlugin._
+    sbtRatsSettings ++ Seq(
+      ratsMainModule <<= scalaSource {
+        _ / "svolpts" / "parser" / "Volpts.syntax"
+      },
+      ratsUseScalaLists := true,
+      ratsUseScalaOptions := true,
+      ratsUseScalaPositions := true,
+      ratsDefineASTClasses := true,
+      ratsDefinePrettyPrinter := true,
+      ratsUseKiama := true,
+      libraryDependencies += "com.googlecode.kiama" %% "kiama" % "1.3.0")
+  }
+
   import sbtunidoc.Plugin.unidocSettings
 
   import Dependencies._
@@ -58,6 +73,7 @@ object Build extends Build {
       addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M1" cross CrossVersion.full),
       licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
       libraryDependencies ++= libraries,
+      scalaSource := file("src/main/scala"),
       scalacOptions ++= Seq(
         "-encoding", "utf-8",
         "-target:jvm-1.7",
@@ -70,5 +86,5 @@ object Build extends Build {
         "-Xlint",
         "-Yinfer-argument-types"))
     .configs(Fmpp)
-    .settings(scalariformSettings ++ fmppSettings ++ bintraySettings ++ releaseSettings ++ unidocSettings : _*)
+    .settings(scalariformSettings ++ fmppSettings ++ bintraySettings ++ releaseSettings ++ unidocSettings ++ ratsSettings : _*)
 }
