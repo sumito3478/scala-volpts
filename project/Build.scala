@@ -53,7 +53,7 @@ object Build extends Build {
       ratsDefineASTClasses := true,
       ratsDefinePrettyPrinter := true,
       ratsUseKiama := true,
-      libraryDependencies += "com.googlecode.kiama" %% "kiama" % "1.3.0")
+      libraryDependencies += "com.googlecode.kiama" %% "kiama" % "1.5.2")
   }
 
   import sbtunidoc.Plugin.unidocSettings
