@@ -53,6 +53,9 @@ object Build extends Build {
       ratsDefineASTClasses := true,
       ratsDefinePrettyPrinter := true,
       ratsUseKiama := true,
+      ratsUseDefaultLayout := false,
+      ratsUseDefaultComments := false,
+      ratsUseDefaultWords := false,
       libraryDependencies += "com.googlecode.kiama" %% "kiama" % "1.5.2")
   }
 
