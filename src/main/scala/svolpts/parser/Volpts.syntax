@@ -1,0 +1,62 @@
+module svolpts.parser.Volpts;
+
+// Lexical tokens
+
+WhiteSpace : String = '\u0009' | '\u000b' | '\u000c' | '\u0020' | '\u0085' | '\u00a0' | '\u00a0' | '\u200b' | '\ufeff' | [Zs].
+rats {
+  // See https://code.google.com/p/sbt-rats/issues/detail?id=13
+  String Spacing = WhiteSpace;
+}
+LF : String = '\u000a'.
+CR : String = '\u000d'.
+LS : String = '\u2028'.
+PS : String = '\u2029'.
+LineTerminator : String = LF CR | LF | CR | LS | PS.
+MultiLineComment : String = "/*" (MultiLineComment / !"*/" _)* "*/".
+MultiLineCommentNoLB : String = "/*" (MultiLineCommentNoLB / !"*/" !LineTerminator _)* "*/".
+SingleLineComment : String = "//" (!LineTerminator _)* LineTerminator.
+Comments : String = SingleLineComment / MultiLineComment.
+S : String = (WhiteSpace / LineTerminator / Comments)+.
+SeminoLB : String = SnoLB? ';' | SnoLB LineTerminator | SnoLB EOF.
+EOF : String = !_.
+SnoLB : String = (WhiteSpace / SingleLineComment / MultiLineCommentNoLB)+.
+Semi : String = S? ';' | SnoLB? LineTerminator | S? EOF.
+
+LET : String = "let".
+IF : String = "if".
+ELSE : String = "else".
+VAL : String = "val".
+WHERE : String = "where".
+RECORD : String = "record".
+FUN : String = "fun".
+MATCH : String = "match".
+CASE : String = "case".
+REC : String = "rec".
+TYPE : String = "type".
+TRUE : String = "true".
+FALSE : String = "false".
+IMPORT : String = "import".
+AS : String = "as".
+VARIANT : String = "variant".
+OF : String = "of".
+KeyWord : String = LET | IF | ELSE | VAL | WHERE | RECORD | FUN | MATCH | CASE | REC | TYPE | TRUE | FALSE | IMPORT | AS | VARIANT | OF.
+Ident : String = !KeyWord IdentStart IdentPart.
+IdentStart : String = UnicodeLetter | '$' | '_'.
+IdentPart : String = IdentStart | [Mn] | [Mc] | [Nd] | [Pc].
+UnicodeLetter : String = [Lu] | [Ll] | [Lt] | [Lm] | [Lo] | [Nl].
+HexDigit : String = [0-9a-fA-F].
+DecimalNumeral : String = '0' | [1-9] [0-9]*.
+HexNumeral : String = "0x" [0-9a-fA-F]+.
+BinaryNumeral : String = "0b" [01]+.
+OctalNumeral : String = '0' [0-7]+.
+IntegerLiteral : String = HexNumeral | BinaryNumeral | OctalNumeral | DecimalNumeral.
+ExponentPart : String = ('E' / 'e') ('+' / '-')? [0-9]+.
+FloatType : String = 'F' | 'f' | 'D' | 'd'.
+FloatingPointLiteral : String =
+  [0-9]+ '.' [0-9]* ExponentPart? FloatType?
+  / '.' [0-9]+ ExponentPart? FloatType?
+  / [0-9]+ ExponentPart
+  / [0-9]+ FloatType
+  / [0-9]+ ExponentPart FloatType.
+DOUBLE_QUOTE : String = '\u0022'.
+StringLiteral : String = DOUBLE_QUOTE (!DOUBLE_QUOTE _)* DOUBLE_QUOTE.
