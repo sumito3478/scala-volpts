@@ -6,6 +6,7 @@ WhiteSpace : String = '\u0009' | '\u000b' | '\u000c' | '\u0020' | '\u0085' | '\u
 rats {
   // See https://code.google.com/p/sbt-rats/issues/detail?id=13
   String Spacing = WhiteSpace;
+  String Word = Ident WhiteSpace;
 }
 LF : String = '\u000a'.
 CR : String = '\u000d'.
@@ -22,23 +23,23 @@ EOF : String = !_.
 SnoLB : String = (WhiteSpace / SingleLineComment / MultiLineCommentNoLB)+.
 Semi : String = S? ';' | SnoLB? LineTerminator | S? EOF.
 
-LET : String = "let".
-IF : String = "if".
-ELSE : String = "else".
-VAL : String = "val".
-WHERE : String = "where".
-RECORD : String = "record".
-FUN : String = "fun".
-MATCH : String = "match".
-CASE : String = "case".
-REC : String = "rec".
-TYPE : String = "type".
-TRUE : String = "true".
-FALSE : String = "false".
-IMPORT : String = "import".
-AS : String = "as".
-VARIANT : String = "variant".
-OF : String = "of".
+LET : String = "let" !IdentPart.
+IF : String = "if" !IdentPart.
+ELSE : String = "else" !IdentPart.
+VAL : String = "val" !IdentPart.
+WHERE : String = "where" !IdentPart.
+RECORD : String = "record" !IdentPart.
+FUN : String = "fun" !IdentPart.
+MATCH : String = "match" !IdentPart.
+CASE : String = "case" !IdentPart.
+REC : String = "rec" !IdentPart.
+TYPE : String = "type" !IdentPart.
+TRUE : String = "true" !IdentPart.
+FALSE : String = "false" !IdentPart.
+IMPORT : String = "import" !IdentPart.
+AS : String = "as" !IdentPart.
+VARIANT : String = "variant" !IdentPart.
+OF : String = "of" !IdentPart.
 KeyWord : String = LET | IF | ELSE | VAL | WHERE | RECORD | FUN | MATCH | CASE | REC | TYPE | TRUE | FALSE | IMPORT | AS | VARIANT | OF.
 Ident : String = !KeyWord IdentStart IdentPart.
 IdentStart : String = UnicodeLetter | '$' | '_'.
@@ -60,3 +61,16 @@ FloatingPointLiteral : String =
   / [0-9]+ ExponentPart FloatType.
 DOUBLE_QUOTE : String = '\u0022'.
 StringLiteral : String = DOUBLE_QUOTE (!DOUBLE_QUOTE _)* DOUBLE_QUOTE.
+
+// Syntax
+
+QualId : String = Ident S? ('.' S? Ident)*.
+
+RecordPart = Ident S? '=' S? Expr.
+CompoundExprPart = Expr S? Semi.
+
+Expr = QualId S? Expr {AppExpr}
+  | QualId {QualIdExpr}
+  | '{' RecordPart* '}' {RecordExpr}
+  | 'if' '(' Expr ')' Expr 'else' Expr {IfExpr}
+  | '{' CompoundExprPart* Expr '}' {CompoundExpr}.
