@@ -63,7 +63,7 @@ object Build extends Build {
 
   import Dependencies._
 
-  lazy val svolpts = project.in(file("."))
+  lazy val jvolpts = project.in(file("."))
     .settings(
       javaOptions := Seq("-Xms1024m"),
       organization := "info.sumito3478",
